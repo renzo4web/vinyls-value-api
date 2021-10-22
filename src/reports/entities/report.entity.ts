@@ -12,7 +12,7 @@ export class Report {
   price: number;
 
   @Column()
-  condition: string; // EXCELLENT,GOOD,MEDIUM,BAD
+  condition: string; // EXCELLENT,GOOD,MEDIUM,BAD // @Contains class validator
 
   @Column()
   year: number;
