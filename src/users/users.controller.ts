@@ -2,15 +2,20 @@ import {
   Body,
   Controller,
   Get,
+  NotFoundException,
   Param,
   ParseIntPipe,
   Post,
 } from '@nestjs/common';
+import { ApiBadRequestResponse, ApiCreatedResponse } from '@nestjs/swagger';
+import { Serialize } from 'src/interceptors/serialize.interceptor';
 import { CreateUserDto } from './dto/create-user.dto';
+import { UserDto } from './dto/user.dto';
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
 
 @Controller('auth')
+@Serialize(UserDto)
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
@@ -20,8 +25,16 @@ export class UsersController {
     return user;
   }
 
+  @ApiBadRequestResponse()
+  @ApiCreatedResponse({ type: User })
   @Get(':id')
   async findUser(@Param('id', ParseIntPipe) id: number) {
-    return this.usersService.findOne(id);
+    const user = await this.usersService.findOne(id);
+
+    if (!user) {
+      throw new NotFoundException();
+    }
+
+    return user;
   }
 }
