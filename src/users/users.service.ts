@@ -15,4 +15,14 @@ export class UsersService {
     const user = this.usersRepository.create(createuserDto);
     return await this.usersRepository.save(user);
   }
+
+  async findOne(id: number): Promise<User> {
+    const user = await this.usersRepository.findOne(id);
+
+    if (!user) {
+      throw new Error('user not found');
+    }
+
+    return user;
+  }
 }
