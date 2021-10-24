@@ -11,12 +11,22 @@ export class UsersService {
     private usersRepository: Repository<User>,
   ) {}
 
-  async create(createuserDto: CreateUserDto): Promise<User> {
-    const user = this.usersRepository.create(createuserDto);
+  async create(email: string, password: string): Promise<User> {
+    const user = this.usersRepository.create({ email, password });
     return await this.usersRepository.save(user);
   }
 
   async findOne(id: number): Promise<User> {
     return await this.usersRepository.findOne(id);
+  }
+
+  async findByEmail(email: string): Promise<User> {
+    const user = await this.usersRepository.findOne({ email });
+
+    if (!user) {
+      throw new NotFoundException();
+    }
+
+    return user;
   }
 }

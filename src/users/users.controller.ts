@@ -24,9 +24,14 @@ export class UsersController {
   ) {}
 
   @Post('signup')
-  async createUser(@Body() createuserDto: CreateUserDto): Promise<User> {
-    const user = this.authService.signup(createuserDto);
+  async createUser(@Body() { email, password }: CreateUserDto): Promise<User> {
+    const user = this.authService.signup(email, password);
     return user;
+  }
+
+  @Post('signin')
+  async loginUser(@Body() { email, password }: CreateUserDto): Promise<User> {
+    return await this.authService.signin(email, password);
   }
 
   @ApiBadRequestResponse()
