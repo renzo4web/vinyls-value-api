@@ -6,6 +6,7 @@ import {
   Param,
   ParseIntPipe,
   Post,
+  Session,
 } from '@nestjs/common';
 import { ApiBadRequestResponse, ApiCreatedResponse } from '@nestjs/swagger';
 import { Serialize } from 'src/interceptors/serialize.interceptor';
@@ -24,14 +25,38 @@ export class UsersController {
   ) {}
 
   @Post('signup')
-  async createUser(@Body() { email, password }: CreateUserDto): Promise<User> {
-    const user = this.authService.signup(email, password);
+  async createUser(
+    @Body() { email, password }: CreateUserDto,
+    @Session() session: any,
+  ): Promise<User> {
+    const user = await this.authService.signup(email, password);
+    session.userId = user.id;
     return user;
   }
 
+  @Get('who')
+  async who(@Session() session: any): Promise<any> {
+    console.log(session.userId);
+    return this.usersService.findOne(session.userId);
+  }
+
+  @Post('signout')
+  signOut(@Session() session: any) {
+    session.userId = null;
+  }
+
   @Post('signin')
-  async loginUser(@Body() { email, password }: CreateUserDto): Promise<User> {
-    return await this.authService.signin(email, password);
+  async loginUser(
+    @Body() { email, password }: CreateUserDto,
+    @Session() session: any,
+  ): Promise<User> {
+    const user = await this.authService.signin(email, password);
+
+    session.userId = user.id;
+
+    console.log(session);
+
+    return user;
   }
 
   @ApiBadRequestResponse()

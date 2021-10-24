@@ -1,7 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { CreateUserDto } from './dto/create-user.dto';
 import { User } from './entities/user.entity';
 
 @Injectable()
@@ -12,11 +15,19 @@ export class UsersService {
   ) {}
 
   async create(email: string, password: string): Promise<User> {
-    const user = this.usersRepository.create({ email, password });
-    return await this.usersRepository.save(user);
+    try {
+      const user = this.usersRepository.create({ email, password });
+      return await this.usersRepository.save(user);
+    } catch (error) {
+      throw new BadRequestException('Email in use');
+    }
   }
 
   async findOne(id: number): Promise<User> {
+    if (!id) {
+      return null;
+    }
+
     return await this.usersRepository.findOne(id);
   }
 
