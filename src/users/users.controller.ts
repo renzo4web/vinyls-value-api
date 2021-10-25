@@ -7,16 +7,16 @@ import {
   ParseIntPipe,
   Post,
   Session,
-  UseInterceptors,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiBadRequestResponse, ApiCreatedResponse } from '@nestjs/swagger';
+import { AuthGuard } from 'src/guards/auth.guard';
 import { Serialize } from 'src/interceptors/serialize.interceptor';
 import { AuthService } from './auth.service';
 import { CurrentUser } from './decorators/current-user.decorator';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UserDto } from './dto/user.dto';
 import { User } from './entities/user.entity';
-import { CurrentUserInterceptor } from './interceptors/current-user.interceptor';
 import { UsersService } from './users.service';
 
 @Controller('auth')
@@ -38,9 +38,9 @@ export class UsersController {
   }
 
   @Get('who')
-  @UseInterceptors(CurrentUserInterceptor)
+  @UseGuards(AuthGuard)
   async who(@CurrentUser() user: User): Promise<any> {
-    //return this.usersService.findOne(session.userId);
+    return user;
   }
 
   @Post('signout')
