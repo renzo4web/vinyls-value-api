@@ -2,14 +2,16 @@ import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
-const cookieSession = require('cookie-session');
+import * as session from 'express-session';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.use(
-    cookieSession({
-      keys: [process.env.COOKIE_SESSION_KEY],
+    session({
+      secret: 'my-secret',
+      resave: false,
+      saveUninitialized: false,
     }),
   );
 
