@@ -6,7 +6,10 @@ export class Report {
   id: number;
 
   @Column()
-  name: string;
+  album: string;
+
+  @Column()
+  artist: string;
 
   @Column()
   price: number;

@@ -57,8 +57,6 @@ export class UsersController {
 
     session.userId = user.id;
 
-    console.log(session);
-
     return user;
   }
 
