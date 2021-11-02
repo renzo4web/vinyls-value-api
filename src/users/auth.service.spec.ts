@@ -2,6 +2,9 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { AuthService } from './auth.service';
 import { User } from './entities/user.entity';
 import { UsersService } from './users.service';
+import * as bcrypt from 'bcrypt';
+
+jest.mock('bcrypt');
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -15,6 +18,9 @@ describe('AuthService', () => {
           email,
           password,
         } as User),
+      findByEmail: jest.fn((email: string) =>
+        Promise.resolve({ id: 1, email, password: 'hashSavedInDB' } as User),
+      ),
     };
 
     const module: TestingModule = await Test.createTestingModule({
@@ -47,8 +53,27 @@ describe('AuthService', () => {
     });
   });
 
-  //it('should throw a error when the user signup with invalid email format', async () => {
-  //fakeUserService.find = () =>
-  //Promise.resolve([{ id: 1, email: 'a', password: '1' }]);
-  //});
+  it('should attempt to get the user by email', async () => {
+    const email = 'a@a.com';
+    const password = '12345678';
+
+    // Failed because
+    try {
+      await service.signin(email, password);
+    } catch (error) {
+      expect(fakeUserService.findByEmail).toHaveBeenCalledWith(email);
+    }
+  });
+
+  it('should call bcrypt.compare() fn', async () => {
+    const email = 'a@a.com';
+    const password = '12345678';
+
+    // Failed because mock bcrypt
+    try {
+      const user = await service.signin(email, password);
+    } catch (error) {
+      expect(bcrypt.compare).toHaveBeenCalledWith(password, 'hashSavedInDB');
+    }
+  });
 });
