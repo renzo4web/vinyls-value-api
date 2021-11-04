@@ -3,7 +3,6 @@ import {
   Column,
   Entity,
   OneToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import * as bcrypt from 'bcrypt';
@@ -19,6 +18,9 @@ export class User {
 
   @Column()
   password: string;
+
+  @Column({ default: true }) // TODO: only for testing change to false
+  admin: boolean;
 
   @OneToMany(() => Report, (report) => report.user)
   reports: Report[];

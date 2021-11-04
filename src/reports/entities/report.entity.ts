@@ -9,6 +9,9 @@ export class Report {
   @Column()
   album: string;
 
+  @Column({ default: false })
+  approved: boolean;
+
   @Column()
   artist: string;
 
