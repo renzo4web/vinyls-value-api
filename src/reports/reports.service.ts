@@ -3,6 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateReportDto } from './dtos/create-report.dto';
+import { getEstimatePriceDto } from './dtos/get-estimate-price.dto';
 import { Report } from './entities/report.entity';
 
 @Injectable()
@@ -37,5 +38,23 @@ export class ReportsService {
 
   async find(): Promise<Report[]> {
     return await this.reportsRepository.find();
+  }
+
+  async createEstimate(estimateDto: getEstimatePriceDto): Promise<any> {
+    const { year, artist, condition } = estimateDto;
+    return this.reportsRepository
+      .createQueryBuilder()
+      .select('AVG(price)', 'price')
+      .where('artist = :artist', { artist })
+      .andWhere('year - :year BETWEEN -3 AND 3', { year })
+      .andWhere('approved IS TRUE')
+      .andWhere('condition = :condition', { condition })
+      .getRawOne();
+  }
+
+  async findBy(query: string | number): Promise<Report[]> {
+    const reports = await this.reportsRepository.find({ [query]: query });
+
+    return reports ? reports : [];
   }
 }
