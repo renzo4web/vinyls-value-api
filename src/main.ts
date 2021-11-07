@@ -9,7 +9,7 @@ async function bootstrap() {
 
   app.use(
     session({
-      secret: 'my-secret',
+      secret: process.env.COOKIE_SESSION_KEY,
       resave: false,
       saveUninitialized: false,
     }),
